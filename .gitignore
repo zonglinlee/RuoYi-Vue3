@@ -46,4 +46,5 @@ nbdist/
 !*/build/*.html
 !*/build/*.xml
 node_modules
+ruoyi_vue3/node_modules
 .idea
