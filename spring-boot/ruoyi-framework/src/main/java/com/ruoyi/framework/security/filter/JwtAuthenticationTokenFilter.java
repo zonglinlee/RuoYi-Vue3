@@ -5,6 +5,9 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.framework.web.service.WxLoginService;
+import com.ruoyi.framework.web.service.WxUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,27 +21,43 @@ import com.ruoyi.framework.web.service.TokenService;
 
 /**
  * token过滤器 验证token有效性
- * 
+ *
  * @author ruoyi
  */
 @Component
-public class JwtAuthenticationTokenFilter extends OncePerRequestFilter
-{
-    @Autowired
-    private TokenService tokenService;
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException
-    {
-        LoginUser loginUser = tokenService.getLoginUser(request);
-        if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication()))
-        {
-            tokenService.verifyToken(loginUser);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        }
-        chain.doFilter(request, response);
+public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+  @Autowired
+  private TokenService tokenService;
+  @Autowired
+  private WxLoginService wxLoginService;
+  
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+          throws ServletException, IOException {
+  
+    String wxToken = wxLoginService.getToken(request);
+    if (StringUtils.isNotEmpty(wxToken)) {
+      System.out.println("微信用户逻辑");
+      WxUser wxUser = wxLoginService.getWxUser(wxToken);
+      if (StringUtils.isNotNull(wxUser)) {
+        wxLoginService.verifyToken(wxUser);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(wxUser, null, null);
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+      }
+    } else {
+      System.out.println("管理员逻辑");
+      LoginUser loginUser = tokenService.getLoginUser(request);
+      if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {
+        tokenService.verifyToken(loginUser);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+      }
     }
+  
+    chain.doFilter(request, response);
+    
+    
+  }
 }

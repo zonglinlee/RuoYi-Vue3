@@ -7,7 +7,7 @@ ruoyi:
   # 版权年份
   copyrightYear: 2024
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: I:/ruoyi/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
@@ -56,10 +56,12 @@ spring:
   # 文件上传
   servlet:
     multipart:
+      enabled: true
       # 单个文件大小
       max-file-size: 10MB
       # 设置总上传的文件大小
       max-request-size: 20MB
+      location: I:/ruoyi/uploadTempPath
   # 服务模块
   devtools:
     restart:
@@ -72,7 +74,7 @@ spring:
     # 端口，默认为6379
     port: 6379
     # 数据库索引
-    database: 0
+    database: 1
     # 密码
     password:
     # 连接超时时间
