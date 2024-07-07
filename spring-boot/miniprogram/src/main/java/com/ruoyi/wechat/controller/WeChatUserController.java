@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/wechatUser")
 public class WeChatUserController {
-    @PostMapping("/login")
-    public Result<>login(){
-
-
-    }
+//    @PostMapping("/login")
+//    public Result<>login(){
+//
+//
+//    }
 }
