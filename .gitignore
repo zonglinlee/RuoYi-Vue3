@@ -10,7 +10,7 @@ target/
 
 ######################################################################
 # IDE
-
+/spring-boot/.idea
 ### STS ###
 .apt_generated
 .classpath

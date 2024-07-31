@@ -8,7 +8,7 @@ import lombok.Data;
  * @author ruoyi
  */
 @Data
-public class WxUser{
+public class WxUser {
   private static final long serialVersionUID = 1L;
   
   /**

@@ -18,6 +18,7 @@ import java.net.URI;
 @Anonymous
 public class WeChatLoginController {
     @GetMapping("/sendLoginCode")
+    @Anonymous
     public void sendLoginCode(@RequestParam("code") String code) throws Exception {
         String appid = "wx60a9282346f4e3c7";
         String secret = "081c9ff41f7584fe1bf5368a5eb25d50";

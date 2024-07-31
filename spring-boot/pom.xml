@@ -175,6 +175,13 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!-- 微信小程序模块-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>miniprogram</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
             <!-- 通用工具-->
             <dependency>
                 <groupId>com.ruoyi</groupId>

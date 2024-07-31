@@ -1,10 +1,13 @@
 package com.ruoyi.framework.web.service;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.http.HttpUtils;
 import com.ruoyi.common.utils.ip.AddressUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
@@ -12,11 +15,14 @@ import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +39,7 @@ public class WxLoginService
     private final String header = "Authorization";
     
     // 令牌秘钥
-    private final String secret = "zhuawashi";
+    private final String secret = "!--f_y_s_m_@##1688";
     
     // 令牌有效期（默认30分钟）
     private final int expireTime = 200;
@@ -63,8 +69,7 @@ public class WxLoginService
             // 解析对应的权限以及用户信息
             String uuid = (String) claims.get(wx_prefix);
             String userKey = getTokenKey(uuid);
-            WxUser wxUser = redisCache.getCacheObject(userKey);//wx_token:xxxx-xxxx-xxxx
-            return wxUser;
+            return redisCache.getCacheObject(userKey);
         }
         return null;
     }
@@ -206,5 +211,26 @@ public class WxLoginService
     private String getTokenKey(String uuid)
     {
         return "wx_token:" + uuid;
+    }
+
+
+    public Map<String,String> getOpenIdByCode (String code) throws Exception {
+        String appid = "wx60a9282346f4e3c7";
+        String secret = "081c9ff41f7584fe1bf5368a5eb25d50";
+        String url = "https://api.weixin.qq.com/sns/jscode2session";
+        URIBuilder uriBuilder = new URIBuilder(url);
+        uriBuilder.addParameter("appid", appid);
+        uriBuilder.addParameter("secret", secret);
+        uriBuilder.addParameter("js_code", code);
+        uriBuilder.addParameter("grant_type", "authorization_code");
+        URI uri = uriBuilder.build();
+        String result = HttpUtils.getCall(uri.toString());
+        JSONObject jsonObject = JSON.parseObject(result);
+        String sessionKey = (String) jsonObject.get("session_key");
+        String openid = (String) jsonObject.get("openid");
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("sessionKey",sessionKey);
+        hashMap.put("openid",openid);
+        return hashMap;
     }
 }
